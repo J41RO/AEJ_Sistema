@@ -96,3 +96,6 @@ secrets/
 *.pem
 *.key
 credentials.json
+
+# Documentation with sensitive info
+ROADMAP_PROFESIONAL.md
