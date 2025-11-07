@@ -57,10 +57,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create tables on startup
+# Create tables and seed data on startup
 @app.on_event("startup")
 def startup_event():
+    from database import SessionLocal
+
+    # Create tables
     create_tables()
+
+    # Seed database with initial data
+    print("🌱 Checking database seed...")
+    db = SessionLocal()
+    try:
+        # Check if users exist
+        from models import User as UserModel
+        user_count = db.query(UserModel).count()
+
+        if user_count == 0:
+            print("📊 Database is empty, running seed...")
+            # Import and run seed functions
+            from seed import create_initial_users, create_initial_products, create_initial_clients, create_initial_suppliers, create_initial_configuration
+
+            create_initial_users(db)
+            create_initial_products(db)
+            create_initial_clients(db)
+            create_initial_suppliers(db)
+            create_initial_configuration(db)
+
+            print("✅ Database seeded successfully!")
+        else:
+            print(f"✓ Database already has {user_count} users, skipping seed")
+    except Exception as e:
+        print(f"❌ Error seeding database: {e}")
+    finally:
+        db.close()
 
 # Health check endpoint
 @app.get("/health")
