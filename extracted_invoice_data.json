@@ -1,0 +1,74 @@
+{
+  "proveedor": {
+    "razon_social": "DISTRIBUIDORA EL HUECO S.A.S",
+    "nit": "900.479.120-7",
+    "ciudad": "BUCARAMANGA",
+    "telefono": "3154795581",
+    "email": "servicioalcliente@tiendaselhueco.com.co",
+    "direccion": "BUCARAMANGA"
+  },
+  "factura": {
+    "numero": "F5C612276",
+    "fecha": "2024-10-24",
+    "hora": "17:40:49",
+    "cufe": "b58736aef9ead8b517c5d606936b38e666d121eacf777dc21c9abed67b8f5d1dd42ba1a7fda2233b2865d431f3c4e1ff",
+    "fecha_aceptacion": "2025-10-24 17:41:23-05:00",
+    "firma_digital": "fVXmF0gRFxTfqCl789tPwYjJ0GxM0CeVnK9V+M1Vi/71+ujN3gxe09WLM7mOQlRLbt8VeT1SJ3ONfz3oW7kx3cuwukIZjUv5EF2a03U13Nv5Cxc+pnx2gF8NY5Yj8MABdKyYL7w6p26XSGZYhIY+9aAn0uAl3H9YeRLNYxI5r4tCrEiE+FzFmC+MY0wtwVIEDBM3Sw0I+v5rus4W3fVTyoln87eHhP1FdHmYODRpdz7TyKellJo9nzhRK6tZrZc6Rqy8O40LbBFLpOaVNG+yo5tJw6+H2/YmBycAjZX1wTQPg8z/C7UPJcdd2Rh1Da75bZzbxio2B3J36GopW6jSLQ=="
+  },
+  "productos": [
+    {
+      "nombre": "BOLSA DE EMPAQUE 30K PCR",
+      "referencia": "30K",
+      "cantidad": 1,
+      "precio_unitario": 500,
+      "total": 500
+    },
+    {
+      "nombre": "ACON.CABE.SECO-MALT.*500ML",
+      "referencia": "6659",
+      "cantidad": 1,
+      "precio_unitario": 13000,
+      "total": 13000
+    },
+    {
+      "nombre": "SH VERSATIL PROTECCION COLOR X 500",
+      "referencia": "6819",
+      "cantidad": 1,
+      "precio_unitario": 11494,
+      "total": 11494
+    },
+    {
+      "nombre": "SHAMPOO BABA VEGETAL X 300ML",
+      "referencia": "BIO81",
+      "cantidad": 2,
+      "precio_unitario": 41360,
+      "total": 82720
+    },
+    {
+      "nombre": "CUBRE PEZON 7478",
+      "referencia": "ORO7478",
+      "cantidad": 1,
+      "precio_unitario": 4680,
+      "total": 4680
+    },
+    {
+      "nombre": "CUBRE PEZON FLOR 7487",
+      "referencia": "ORO7487",
+      "cantidad": 2,
+      "precio_unitario": 3120,
+      "total": 6240
+    },
+    {
+      "nombre": "TINTE IGORA 6-6 60G",
+      "referencia": "TIR6-6",
+      "cantidad": 2,
+      "precio_unitario": 19700,
+      "total": 39400
+    }
+  ],
+  "totales": {
+    "subtotal": 132802,
+    "iva": 25232,
+    "total": 158034
+  }
+}

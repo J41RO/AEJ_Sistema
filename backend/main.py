@@ -25,6 +25,7 @@ from models import (
     MovementType
 )
 from schemas import (
+    SupplierCreate,
     User as UserSchema, UserCreate, UserUpdate,
     Product as ProductSchema, ProductCreate, ProductUpdate,
     Client as ClientSchema, ClientCreate, ClientUpdate,
@@ -449,3 +450,128 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
+# Purchase Invoice endpoints
+from fastapi import File, UploadFile, Form
+from invoice_processor import InvoiceProcessor
+from models import PurchaseInvoice as PurchaseInvoiceModel
+from schemas import (
+    PurchaseInvoice as PurchaseInvoiceSchema,
+    InvoiceDataExtraction,
+    Supplier as SupplierSchema
+)
+import json
+
+@app.get("/suppliers", response_model=List[SupplierSchema])
+async def get_suppliers(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: UserModel = Depends(get_current_active_user)
+):
+    """Get all suppliers"""
+    suppliers = db.query(SupplierModel).filter(SupplierModel.is_active == True).offset(skip).limit(limit).all()
+    return suppliers
+
+@app.post("/suppliers", response_model=SupplierSchema)
+async def create_supplier(
+    supplier: SupplierCreate,
+    db: Session = Depends(get_db),
+    current_user: UserModel = Depends(require_admin_or_super)
+):
+    """Create new supplier"""
+    # Check if NIT already exists
+    db_supplier = db.query(SupplierModel).filter(SupplierModel.nit == supplier.nit).first()
+    if db_supplier:
+        raise HTTPException(status_code=400, detail="NIT already exists")
+    
+    db_supplier = SupplierModel(**supplier.dict())
+    db.add(db_supplier)
+    db.commit()
+    db.refresh(db_supplier)
+    return db_supplier
+
+@app.post("/api/invoices/upload")
+async def upload_invoice(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: UserModel = Depends(get_current_active_user)
+):
+    """
+    Upload invoice PDF and extract data automatically
+    Returns extracted invoice data for review
+    """
+    if not file.filename.endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+    
+    # For now, return a template response
+    # In production, you would use OCR/PDF parsing here
+    return {
+        "message": "PDF uploaded successfully",
+        "filename": file.filename,
+        "note": "Please use the extracted data from the JSON file or manual entry"
+    }
+
+@app.post("/api/invoices/process", response_model=PurchaseInvoiceSchema)
+async def process_invoice(
+    invoice_data: str = Form(...),
+    pdf_file: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db),
+    current_user: UserModel = Depends(get_current_active_user)
+):
+    """
+    Process invoice data: create/update supplier, products, and inventory
+    """
+    try:
+        # Parse JSON data
+        data = json.loads(invoice_data)
+        
+        # Create processor
+        processor = InvoiceProcessor(db, current_user)
+        
+        # Process invoice
+        purchase_invoice = await processor.process_invoice(data, pdf_file)
+        
+        return purchase_invoice
+        
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON data")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/invoices", response_model=List[PurchaseInvoiceSchema])
+async def get_purchase_invoices(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: UserModel = Depends(get_current_active_user)
+):
+    """Get all purchase invoices"""
+    invoices = db.query(PurchaseInvoiceModel).offset(skip).limit(limit).all()
+    return invoices
+
+@app.get("/api/invoices/{invoice_id}", response_model=PurchaseInvoiceSchema)
+async def get_purchase_invoice(
+    invoice_id: int,
+    db: Session = Depends(get_db),
+    current_user: UserModel = Depends(get_current_active_user)
+):
+    """Get purchase invoice by ID"""
+    invoice = db.query(PurchaseInvoiceModel).filter(PurchaseInvoiceModel.id == invoice_id).first()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    return invoice
+
+@app.delete("/api/invoices/{invoice_id}")
+async def delete_purchase_invoice(
+    invoice_id: int,
+    db: Session = Depends(get_db),
+    current_user: UserModel = Depends(require_admin_or_super)
+):
+    """Delete purchase invoice"""
+    invoice = db.query(PurchaseInvoiceModel).filter(PurchaseInvoiceModel.id == invoice_id).first()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    db.delete(invoice)
+    db.commit()
+    return {"message": "Invoice deleted successfully"}

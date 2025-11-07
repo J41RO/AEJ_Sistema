@@ -38,6 +38,11 @@ class MovementType(str, enum.Enum):
     SALIDA = "SALIDA"
     AJUSTE = "AJUSTE"
 
+class PurchaseInvoiceStatus(str, enum.Enum):
+    PENDIENTE = "PENDIENTE"
+    PROCESADA = "PROCESADA"
+    CANCELADA = "CANCELADA"
+
 # Models
 class User(Base):
     __tablename__ = "users"
@@ -78,6 +83,7 @@ class Product(Base):
     sale_items = relationship("SaleItem", back_populates="product")
     inventory_movements = relationship("InventoryMovement", back_populates="product")
     supplier_products = relationship("SupplierProduct", back_populates="product")
+    purchase_invoice_items = relationship("PurchaseInvoiceItem", back_populates="product")
 
 class Client(Base):
     __tablename__ = "clients"
@@ -123,6 +129,7 @@ class Supplier(Base):
     
     # Relationships
     supplier_products = relationship("SupplierProduct", back_populates="supplier")
+    purchase_invoices = relationship("PurchaseInvoice", back_populates="supplier")
 
 class SupplierProduct(Base):
     __tablename__ = "supplier_products"
@@ -193,6 +200,43 @@ class Invoice(Base):
     
     # Relationships
     sale = relationship("Sale")
+
+class PurchaseInvoice(Base):
+    __tablename__ = "purchase_invoices"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    numero_factura = Column(String(50), unique=True, index=True, nullable=False)
+    supplier_id = Column(Integer, ForeignKey("suppliers.id"), nullable=False)
+    fecha_emision = Column(DateTime, nullable=False)
+    cufe = Column(String(200))
+    fecha_aceptacion = Column(DateTime)
+    firma_digital = Column(Text)
+    subtotal = Column(Float, nullable=False)
+    iva = Column(Float, nullable=False)
+    total = Column(Float, nullable=False)
+    archivo_pdf = Column(String(500))
+    status = Column(Enum(PurchaseInvoiceStatus), default=PurchaseInvoiceStatus.PENDIENTE)
+    notas = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    supplier = relationship("Supplier", back_populates="purchase_invoices")
+    items = relationship("PurchaseInvoiceItem", back_populates="purchase_invoice", cascade="all, delete-orphan")
+
+class PurchaseInvoiceItem(Base):
+    __tablename__ = "purchase_invoice_items"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    purchase_invoice_id = Column(Integer, ForeignKey("purchase_invoices.id"), nullable=False)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    cantidad = Column(Integer, nullable=False)
+    precio_unitario = Column(Float, nullable=False)
+    subtotal = Column(Float, nullable=False)
+    
+    # Relationships
+    purchase_invoice = relationship("PurchaseInvoice", back_populates="items")
+    product = relationship("Product", back_populates="purchase_invoice_items")
 
 class InventoryMovement(Base):
     __tablename__ = "inventory_movements"

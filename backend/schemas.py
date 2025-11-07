@@ -1,42 +1,9 @@
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
-from models import UserRole, UserLocation, ProductCategory, SaleStatus, InvoiceStatus, MovementType
+from models import UserRole, UserLocation, ProductCategory, SaleStatus, PurchaseInvoiceStatus
 
-# User Schemas
-class UserBase(BaseModel):
-    username: str
-    email: EmailStr
-    nombre_completo: str
-    rol: UserRole
-    ubicacion: UserLocation
-    is_active: bool = True
-
-class UserCreate(UserBase):
-    password: str
-    
-    @validator('password')
-    def validate_password(cls, v):
-        if len(v) < 6:
-            raise ValueError('Password must be at least 6 characters')
-        return v
-
-class UserUpdate(BaseModel):
-    email: Optional[EmailStr] = None
-    nombre_completo: Optional[str] = None
-    rol: Optional[UserRole] = None
-    ubicacion: Optional[UserLocation] = None
-    is_active: Optional[bool] = None
-
-class User(UserBase):
-    id: int
-    created_at: datetime
-    updated_at: Optional[datetime] = None
-    
-    class Config:
-        from_attributes = True
-
-# Auth Schemas
+# Auth schemas
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -48,7 +15,34 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
-# Product Schemas
+# User schemas
+class UserBase(BaseModel):
+    username: str
+    email: EmailStr
+    nombre_completo: str
+    rol: UserRole
+    ubicacion: UserLocation
+
+class UserCreate(UserBase):
+    password: str
+    is_active: bool = True
+
+class UserUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+    nombre_completo: Optional[str] = None
+    rol: Optional[UserRole] = None
+    ubicacion: Optional[UserLocation] = None
+    is_active: Optional[bool] = None
+
+class User(UserBase):
+    id: int
+    is_active: bool
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+# Product schemas
 class ProductBase(BaseModel):
     codigo: str
     nombre: str
@@ -59,13 +53,11 @@ class ProductBase(BaseModel):
     precio_venta: float
     stock_actual: int = 0
     stock_minimo: int = 5
-    is_active: bool = True
 
 class ProductCreate(ProductBase):
-    pass
+    is_active: bool = True
 
 class ProductUpdate(BaseModel):
-    codigo: Optional[str] = None
     nombre: Optional[str] = None
     descripcion: Optional[str] = None
     categoria: Optional[ProductCategory] = None
@@ -78,13 +70,13 @@ class ProductUpdate(BaseModel):
 
 class Product(ProductBase):
     id: int
+    is_active: bool
     created_at: datetime
-    updated_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True
 
-# Client Schemas
+# Client schemas
 class ClientBase(BaseModel):
     documento: str
     tipo_documento: str
@@ -94,39 +86,32 @@ class ClientBase(BaseModel):
     direccion: Optional[str] = None
     ciudad: Optional[str] = None
     departamento: Optional[str] = None
-    fecha_nacimiento: Optional[datetime] = None
-    genero: Optional[str] = None
     acepta_marketing: bool = False
     acepta_datos: bool = True
-    is_active: bool = True
 
 class ClientCreate(ClientBase):
-    pass
+    is_active: bool = True
 
 class ClientUpdate(BaseModel):
-    documento: Optional[str] = None
-    tipo_documento: Optional[str] = None
     nombre_completo: Optional[str] = None
     email: Optional[EmailStr] = None
     telefono: Optional[str] = None
     direccion: Optional[str] = None
     ciudad: Optional[str] = None
     departamento: Optional[str] = None
-    fecha_nacimiento: Optional[datetime] = None
-    genero: Optional[str] = None
     acepta_marketing: Optional[bool] = None
     acepta_datos: Optional[bool] = None
     is_active: Optional[bool] = None
 
 class Client(ClientBase):
     id: int
+    is_active: bool
     created_at: datetime
-    updated_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True
 
-# Supplier Schemas
+# Supplier schemas
 class SupplierBase(BaseModel):
     nit: str
     razon_social: str
@@ -135,38 +120,19 @@ class SupplierBase(BaseModel):
     telefono: Optional[str] = None
     direccion: Optional[str] = None
     ciudad: Optional[str] = None
-    contacto_nombre: Optional[str] = None
-    contacto_telefono: Optional[str] = None
-    contacto_email: Optional[EmailStr] = None
-    calificacion: float = 0.0
-    is_active: bool = True
 
 class SupplierCreate(SupplierBase):
-    pass
-
-class SupplierUpdate(BaseModel):
-    nit: Optional[str] = None
-    razon_social: Optional[str] = None
-    nombre_comercial: Optional[str] = None
-    email: Optional[EmailStr] = None
-    telefono: Optional[str] = None
-    direccion: Optional[str] = None
-    ciudad: Optional[str] = None
-    contacto_nombre: Optional[str] = None
-    contacto_telefono: Optional[str] = None
-    contacto_email: Optional[EmailStr] = None
-    calificacion: Optional[float] = None
-    is_active: Optional[bool] = None
+    is_active: bool = True
 
 class Supplier(SupplierBase):
     id: int
+    is_active: bool
     created_at: datetime
-    updated_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True
 
-# Sale Schemas
+# Sale schemas
 class SaleItemBase(BaseModel):
     product_id: int
     cantidad: int
@@ -178,6 +144,7 @@ class SaleItemCreate(SaleItemBase):
 
 class SaleItem(SaleItemBase):
     id: int
+    sale_id: int
     subtotal: float
     product: Product
     
@@ -196,10 +163,6 @@ class SaleBase(BaseModel):
 class SaleCreate(SaleBase):
     items: List[SaleItemCreate]
 
-class SaleUpdate(BaseModel):
-    status: Optional[SaleStatus] = None
-    notas: Optional[str] = None
-
 class Sale(SaleBase):
     id: int
     numero_venta: str
@@ -213,56 +176,69 @@ class Sale(SaleBase):
     class Config:
         from_attributes = True
 
-# Inventory Movement Schemas
-class InventoryMovementBase(BaseModel):
+# Purchase Invoice schemas
+class PurchaseInvoiceItemBase(BaseModel):
     product_id: int
-    tipo: MovementType
     cantidad: int
-    motivo: str
-    referencia: Optional[str] = None
+    precio_unitario: float
+    subtotal: float
 
-class InventoryMovementCreate(InventoryMovementBase):
+class PurchaseInvoiceItemCreate(PurchaseInvoiceItemBase):
     pass
 
-class InventoryMovement(InventoryMovementBase):
+class PurchaseInvoiceItem(PurchaseInvoiceItemBase):
     id: int
-    user_id: int
-    stock_anterior: int
-    stock_nuevo: int
-    created_at: datetime
+    purchase_invoice_id: int
     product: Product
-    user: User
     
     class Config:
         from_attributes = True
 
-# Configuration Schemas
-class ConfigurationBase(BaseModel):
-    key: str
-    value: str
-    description: Optional[str] = None
+class PurchaseInvoiceBase(BaseModel):
+    numero_factura: str
+    supplier_id: int
+    fecha_emision: datetime
+    cufe: Optional[str] = None
+    fecha_aceptacion: Optional[datetime] = None
+    firma_digital: Optional[str] = None
+    subtotal: float
+    iva: float
+    total: float
+    notas: Optional[str] = None
 
-class ConfigurationCreate(ConfigurationBase):
-    pass
+class PurchaseInvoiceCreate(PurchaseInvoiceBase):
+    items: List[PurchaseInvoiceItemCreate]
 
-class ConfigurationUpdate(BaseModel):
-    value: str
-    description: Optional[str] = None
-
-class Configuration(ConfigurationBase):
+class PurchaseInvoice(PurchaseInvoiceBase):
     id: int
+    archivo_pdf: Optional[str] = None
+    status: PurchaseInvoiceStatus
     created_at: datetime
-    updated_at: Optional[datetime] = None
+    supplier: Supplier
+    items: List[PurchaseInvoiceItem]
     
     class Config:
         from_attributes = True
 
-# Dashboard Schemas
+# Invoice data extraction schema
+class InvoiceDataExtraction(BaseModel):
+    proveedor: dict
+    factura: dict
+    productos: List[dict]
+    totales: dict
+
+# Dashboard schemas
+class DashboardAlert(BaseModel):
+    tipo: str
+    mensaje: str
+    producto: Optional[str] = None
+    stock: Optional[int] = None
+
 class DashboardMetrics(BaseModel):
     total_ventas_hoy: float
     total_productos: int
     total_clientes: int
     stock_bajo: int
     ventas_mes: float
-    productos_mas_vendidos: List[dict]
-    alertas: List[dict]
+    productos_mas_vendidos: List[Product]
+    alertas: List[DashboardAlert]
