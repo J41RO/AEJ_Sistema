@@ -14,6 +14,7 @@ import Users from '@/pages/Users';
 import Suppliers from '@/pages/Suppliers';
 import Billing from '@/pages/Billing';
 import Configuration from '@/pages/Configuration';
+import PurchaseInvoices from '@/pages/PurchaseInvoices';
 import { authAPI, tokenManager, User } from '@/lib/api';
 import { DEFAULT_PERMISSIONS_BY_ROLE } from '@/lib/permissions';
 import { toast } from 'sonner';
@@ -115,6 +116,8 @@ const App = () => {
         return <Billing user={user} />;
       case 'settings':
         return <Configuration user={user} />;
+      case 'purchase-invoices':
+        return <PurchaseInvoices user={user} />;
       default:
         return <Dashboard user={user} />;
     }

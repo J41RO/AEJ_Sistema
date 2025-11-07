@@ -16,7 +16,8 @@ import {
   Menu,
   X,
   Bell,
-  Search
+  Search,
+  FileText
 } from 'lucide-react';
 import { User, hasPermission, isSuperUser } from '@/lib/auth';
 import { db } from '@/lib/database';
@@ -75,6 +76,12 @@ export default function Layout({ children, user, onLogout, currentPage, onNaviga
       permission: 'proveedores.read'
     },
     {
+      id: 'purchase-invoices',
+      label: 'Facturas de Compra',
+      icon: FileText,
+      permission: 'proveedores.read'
+    },
+    {
       id: 'billing',
       label: 'Facturación',
       icon: Receipt,
@@ -119,6 +126,23 @@ export default function Layout({ children, user, onLogout, currentPage, onNaviga
 
   const getUbicacionFlag = (ubicacion: string) => {
     return ubicacion === 'EEUU' ? '🇺🇸' : '🇨🇴';
+  };
+
+  const getPageTitle = (page: string) => {
+    const titles: { [key: string]: string } = {
+      'pos': 'Punto de Venta',
+      'products': 'Productos',
+      'clients': 'Clientes',
+      'inventory': 'Inventario',
+      'suppliers': 'Proveedores',
+      'purchase-invoices': 'Facturas de Compra',
+      'billing': 'Facturación',
+      'reports': 'Reportes',
+      'users': 'Usuarios',
+      'settings': 'Configuración',
+      'dashboard': 'Dashboard'
+    };
+    return titles[page] || 'Dashboard';
   };
 
   return (
@@ -170,7 +194,7 @@ export default function Layout({ children, user, onLogout, currentPage, onNaviga
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-4 space-y-1">
+        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 280px)' }}>
           {filteredMenuItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentPage === item.id;
@@ -230,16 +254,7 @@ export default function Layout({ children, user, onLogout, currentPage, onNaviga
             
             <div className="hidden sm:flex items-center space-x-2">
               <h2 className="text-xl font-semibold text-gray-900 capitalize">
-                {currentPage === 'pos' ? 'Punto de Venta' : 
-                 currentPage === 'products' ? 'Productos' :
-                 currentPage === 'clients' ? 'Clientes' :
-                 currentPage === 'inventory' ? 'Inventario' :
-                 currentPage === 'suppliers' ? 'Proveedores' :
-                 currentPage === 'billing' ? 'Facturación' :
-                 currentPage === 'reports' ? 'Reportes' :
-                 currentPage === 'users' ? 'Usuarios' :
-                 currentPage === 'settings' ? 'Configuración' :
-                 'Dashboard'}
+                {getPageTitle(currentPage)}
               </h2>
             </div>
           </div>

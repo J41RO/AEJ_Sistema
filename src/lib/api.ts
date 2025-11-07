@@ -170,6 +170,69 @@ export interface DashboardMetrics {
   alertas: DashboardAlert[];
 }
 
+// Purchase Invoices Types
+export interface PurchaseInvoice {
+  id: number;
+  numero_factura: string;
+  supplier_id: number;
+  fecha_emision: string;
+  cufe?: string;
+  fecha_aceptacion?: string;
+  firma_digital?: string;
+  subtotal: number;
+  iva: number;
+  total: number;
+  status: string;
+  archivo_pdf?: string;
+  notas?: string;
+  created_at: string;
+  supplier?: any;
+  items?: PurchaseInvoiceItem[];
+}
+
+export interface PurchaseInvoiceItem {
+  id?: number;
+  purchase_invoice_id?: number;
+  product_id?: number;
+  referencia: string;
+  nombre: string;
+  cantidad: number;
+  precio_unitario: number;
+  subtotal: number;
+  product?: Product;
+}
+
+export interface InvoiceDataExtraction {
+  proveedor: {
+    nit: string;
+    razon_social: string;
+    email?: string;
+    telefono?: string;
+    direccion?: string;
+    ciudad?: string;
+  };
+  factura: {
+    numero: string;
+    fecha: string;
+    hora?: string;
+    cufe?: string;
+    fecha_aceptacion?: string;
+    firma_digital?: string;
+  };
+  productos: Array<{
+    referencia: string;
+    nombre: string;
+    cantidad: number;
+    precio_unitario: number;
+    total: number;
+  }>;
+  totales: {
+    subtotal: number;
+    iva: number;
+    total: number;
+  };
+}
+
 // API Methods
 export const authAPI = {
   login: async (username: string, password: string): Promise<{ access_token: string; token_type: string }> => {
@@ -274,6 +337,62 @@ export const dashboardAPI = {
     const response = await api.get('/dashboard/metrics');
     return response.data;
   }
+};
+
+export const suppliersAPI = {
+  list: async () => {
+    const response = await api.get('/suppliers');
+    return response.data;
+  },
+  
+  create: async (supplierData: any) => {
+    const response = await api.post('/suppliers', supplierData);
+    return response.data;
+  },
+};
+
+export const invoiceAPI = {
+  upload: async (file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await api.post('/api/invoices/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  process: async (invoiceData: InvoiceDataExtraction, pdfFile?: File): Promise<PurchaseInvoice> => {
+    const formData = new FormData();
+    formData.append('invoice_data', JSON.stringify(invoiceData));
+    
+    if (pdfFile) {
+      formData.append('pdf_file', pdfFile);
+    }
+    
+    const response = await api.post('/api/invoices/process', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  list: async (): Promise<PurchaseInvoice[]> => {
+    const response = await api.get('/api/invoices');
+    return response.data;
+  },
+
+  get: async (id: number): Promise<PurchaseInvoice> => {
+    const response = await api.get(`/api/invoices/${id}`);
+    return response.data;
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await api.delete(`/api/invoices/${id}`);
+  },
 };
 
 // Health check
