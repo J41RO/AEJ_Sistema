@@ -1,1 +1,1 @@
-web: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+web: cd backend && python seed.py && uvicorn main:app --host 0.0.0.0 --port $PORT
