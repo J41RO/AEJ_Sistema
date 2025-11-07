@@ -6,20 +6,7 @@ Last Updated: 2025-11-07
 
 ## 🔴 CRITICAL PRIORITY
 
-### 1. Configure VITE_API_URL in Vercel for Production
-**Status:** Pending
-**Estimated Time:** 5 minutes
-**Description:**
-- Go to Vercel Dashboard → Project Settings → Environment Variables
-- Add: `VITE_API_URL=https://aejsistema-production.up.railway.app`
-- Select all environments (Production, Preview, Development)
-- Redeploy the application
-
-**Blocker:** Production frontend cannot connect to Railway backend
-
----
-
-### 2. Implement "+ Add Category" Button in Category Select
+### 1. Implement "+ Add Category" Button in Category Select
 **Status:** Pending
 **Estimated Time:** 2 hours
 **Description:**
@@ -36,7 +23,7 @@ Last Updated: 2025-11-07
 
 ---
 
-### 3. Implement "+ Add Brand" Button in Brand Select
+### 2. Implement "+ Add Brand" Button in Brand Select
 **Status:** Pending
 **Estimated Time:** 1.5 hours
 **Description:**
@@ -55,7 +42,7 @@ Last Updated: 2025-11-07
 
 ## 🟠 HIGH PRIORITY
 
-### 4. Create Backend Endpoints for Categories
+### 3. Create Backend Endpoints for Categories
 **Status:** Pending
 **Estimated Time:** 1 hour
 **Description:**
@@ -70,7 +57,7 @@ Last Updated: 2025-11-07
 
 ---
 
-### 5. Create Backend Endpoints for Brands
+### 4. Create Backend Endpoints for Brands
 **Status:** Pending
 **Estimated Time:** 1 hour
 **Description:**
@@ -85,7 +72,7 @@ Last Updated: 2025-11-07
 
 ---
 
-### 6. Design and Create Purchase Invoice Database Tables
+### 5. Design and Create Purchase Invoice Database Tables
 **Status:** Pending
 **Estimated Time:** 2 hours
 **Description:**
@@ -107,7 +94,7 @@ Create two new tables:
 
 ---
 
-### 7. Add 'estado_registro' Column to Products Table
+### 6. Add 'estado_registro' Column to Products Table
 **Status:** Pending
 **Estimated Time:** 30 minutes
 **Description:**
@@ -121,7 +108,7 @@ Create two new tables:
 
 ---
 
-### 8. Implement Purchase Invoice Registration Module
+### 7. Implement Purchase Invoice Registration Module
 **Status:** Pending
 **Estimated Time:** 4 hours
 **Description:**
@@ -146,7 +133,7 @@ Create complete module for registering purchase invoices from suppliers:
 
 ---
 
-### 9. Implement Automatic Product Creation from Invoice
+### 8. Implement Automatic Product Creation from Invoice
 **Status:** Pending
 **Estimated Time:** 3 hours
 **Description:**
@@ -169,7 +156,7 @@ Business logic when saving a purchase invoice:
 
 ## 🟡 MEDIUM PRIORITY
 
-### 10. Add Status Badge to Product List
+### 9. Add Status Badge to Product List
 **Status:** Pending
 **Estimated Time:** 1 hour
 **Description:**
@@ -184,7 +171,7 @@ Business logic when saving a purchase invoice:
 
 ---
 
-### 11. Add "Show Only Incomplete" Filter to Products
+### 10. Add "Show Only Incomplete" Filter to Products
 **Status:** Pending
 **Estimated Time:** 30 minutes
 **Description:**
@@ -197,7 +184,7 @@ Business logic when saving a purchase invoice:
 
 ---
 
-### 12. Improve Product Edit Form for Incomplete Products
+### 11. Improve Product Edit Form for Incomplete Products
 **Status:** Pending
 **Estimated Time:** 1.5 hours
 **Description:**
@@ -213,7 +200,7 @@ Business logic when saving a purchase invoice:
 
 ## 🔵 TESTING & VALIDATION
 
-### 13. Insert Test Data in Local Database
+### 12. Insert Test Data in Local Database
 **Status:** Pending
 **Estimated Time:** 15 minutes
 **Description:**
@@ -227,7 +214,7 @@ Business logic when saving a purchase invoice:
 
 ---
 
-### 14. Test Complete Product Creation
+### 13. Test Complete Product Creation
 **Status:** Pending
 **Estimated Time:** 10 minutes
 **Description:**
@@ -237,7 +224,7 @@ Business logic when saving a purchase invoice:
 
 ---
 
-### 15. Test Client Creation
+### 14. Test Client Creation
 **Status:** Pending
 **Estimated Time:** 10 minutes
 **Description:**
@@ -248,7 +235,7 @@ Business logic when saving a purchase invoice:
 
 ---
 
-### 16. Test POS - Add Product to Cart and Complete Sale
+### 15. Test POS - Add Product to Cart and Complete Sale
 **Status:** Pending
 **Estimated Time:** 15 minutes
 **Description:**
@@ -262,7 +249,7 @@ Business logic when saving a purchase invoice:
 
 ---
 
-### 17. Test Stock Deduction After Sale
+### 16. Test Stock Deduction After Sale
 **Status:** Pending
 **Estimated Time:** 5 minutes
 **Description:**
@@ -273,7 +260,7 @@ Business logic when saving a purchase invoice:
 
 ---
 
-### 18. Test Inventory Module - View Stock Movements
+### 17. Test Inventory Module - View Stock Movements
 **Status:** Pending
 **Estimated Time:** 10 minutes
 **Description:**
@@ -284,7 +271,7 @@ Business logic when saving a purchase invoice:
 
 ---
 
-### 19. Test Reports Module - Generate Sales Report
+### 18. Test Reports Module - Generate Sales Report
 **Status:** Pending
 **Estimated Time:** 10 minutes
 **Description:**
@@ -296,7 +283,7 @@ Business logic when saving a purchase invoice:
 
 ---
 
-### 20. Verify Dashboard Updates with Real Data
+### 19. Verify Dashboard Updates with Real Data
 **Status:** Pending
 **Estimated Time:** 5 minutes
 **Description:**
@@ -311,9 +298,9 @@ Business logic when saving a purchase invoice:
 
 ## 📊 Summary
 
-- **Critical:** 3 tasks
+- **Critical:** 2 tasks
 - **High Priority:** 6 tasks
 - **Medium Priority:** 3 tasks
 - **Testing:** 8 tasks
 
-**Total Pending Tasks:** 20
+**Total Pending Tasks:** 19

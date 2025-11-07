@@ -6,6 +6,19 @@ Last Updated: 2025-11-07
 
 ## ✅ Completed Tasks
 
+### Configure VITE_API_URL in Vercel for Production
+**Completed:** 2025-11-07
+**Actual Time:** 5 minutes
+**Description:**
+- Configured environment variable in Vercel Dashboard
+- Added: `VITE_API_URL=https://aejsistema-production.up.railway.app`
+- Applied to all environments (Production, Preview, Development)
+- Pending redeploy for changes to take effect
+
+**Result:** Production frontend can now connect to Railway backend once redeployed
+
+---
+
 ### Dashboard Menu Visibility Fix
 **Completed:** 2025-11-07
 **Description:**
@@ -74,6 +87,6 @@ Last Updated: 2025-11-07
 
 ## 📊 Statistics
 
-**Total Completed Tasks:** 5
+**Total Completed Tasks:** 6
 **Current Sprint:** Production Deployment & Critical Fixes
 **Next Focus:** Purchase Invoice System Implementation
