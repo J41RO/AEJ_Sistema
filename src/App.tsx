@@ -15,6 +15,7 @@ import Suppliers from '@/pages/Suppliers';
 import Billing from '@/pages/Billing';
 import Configuration from '@/pages/Configuration';
 import { authAPI, tokenManager, User } from '@/lib/api';
+import { DEFAULT_PERMISSIONS_BY_ROLE } from '@/lib/permissions';
 import { toast } from 'sonner';
 
 const queryClient = new QueryClient();
@@ -30,6 +31,17 @@ const App = () => {
       if (tokenManager.isValid()) {
         try {
           const userData = await authAPI.getCurrentUser();
+
+          // Add permissions based on role if not present
+          if (!userData.permissions || userData.permissions.length === 0) {
+            userData.permissions = DEFAULT_PERMISSIONS_BY_ROLE[userData.rol] || [];
+          }
+
+          // Ensure activo is set to true if undefined
+          if (userData.activo === undefined) {
+            userData.activo = true;
+          }
+
           setUser(userData);
         } catch (error) {
           console.error('Failed to get user data:', error);
@@ -46,10 +58,21 @@ const App = () => {
     try {
       const { access_token } = await authAPI.login(username, password);
       tokenManager.set(access_token);
-      
+
       const userData = await authAPI.getCurrentUser();
+
+      // Add permissions based on role if not present
+      if (!userData.permissions || userData.permissions.length === 0) {
+        userData.permissions = DEFAULT_PERMISSIONS_BY_ROLE[userData.rol] || [];
+      }
+
+      // Ensure activo is set to true if undefined
+      if (userData.activo === undefined) {
+        userData.activo = true;
+      }
+
       setUser(userData);
-      
+
       toast.success(`¡Bienvenido ${userData.nombre_completo}!`);
     } catch (error: any) {
       console.error('Login error:', error);

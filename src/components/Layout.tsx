@@ -31,7 +31,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, user, onLogout, currentPage, onNavigate }: LayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   
   // Obtener alertas del sistema
   const metrics = db.getDashboardMetrics();
@@ -124,7 +124,7 @@ export default function Layout({ children, user, onLogout, currentPage, onNaviga
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
+      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-0`}>
         <div className="flex items-center justify-between h-16 px-6 border-b">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -139,7 +139,7 @@ export default function Layout({ children, user, onLogout, currentPage, onNaviga
             variant="ghost"
             size="sm"
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden"
+            className="md:hidden"
           >
             <X className="w-5 h-5" />
           </Button>
@@ -214,7 +214,7 @@ export default function Layout({ children, user, onLogout, currentPage, onNaviga
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:ml-0">
+      <div className="flex-1 flex flex-col md:ml-0">
         {/* Top Bar */}
         <header className="h-16 bg-white shadow-sm border-b flex items-center justify-between px-6">
           <div className="flex items-center space-x-4">
@@ -222,7 +222,8 @@ export default function Layout({ children, user, onLogout, currentPage, onNaviga
               variant="ghost"
               size="sm"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden"
+              className="md:hidden"
+              aria-label="Abrir menú"
             >
               <Menu className="w-5 h-5" />
             </Button>
@@ -288,7 +289,7 @@ export default function Layout({ children, user, onLogout, currentPage, onNaviga
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}

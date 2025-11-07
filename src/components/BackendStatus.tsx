@@ -8,8 +8,9 @@ export default function BackendStatus() {
 
   const checkBackendStatus = async () => {
     try {
-      // Try to connect to backend on port 8000
-      const response = await fetch('http://localhost:8000/health', {
+      // Use environment variable or detect backend URL
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://192.168.1.137:8000';
+      const response = await fetch(`${apiUrl}/health`, {
         method: 'GET',
         timeout: 3000,
       });
