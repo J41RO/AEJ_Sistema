@@ -268,7 +268,7 @@ export default function Billing({ user }: BillingProps) {
                       <SelectValue placeholder="Usar cliente de la venta" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Usar cliente de la venta</SelectItem>
+                      <SelectItem value="none">Usar cliente de la venta</SelectItem>
                       {clientes.filter(c => c.activo).map((cliente) => (
                         <SelectItem key={cliente.id} value={cliente.id}>
                           {getClienteNombre(cliente.id)} - {cliente.documento}

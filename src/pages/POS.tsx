@@ -376,7 +376,7 @@ export default function POS({ user }: POSProps) {
                       <SelectValue placeholder="Seleccionar cliente (opcional)" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Venta sin cliente</SelectItem>
+                      <SelectItem value="none">Venta sin cliente</SelectItem>
                       {clientes.map((cliente) => (
                         <SelectItem key={cliente.id} value={cliente.id}>
                           {cliente.nombre} {cliente.apellido} - {cliente.documento}

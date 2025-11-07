@@ -298,7 +298,7 @@ export default function Products({ user }: ProductsProps) {
                         <SelectValue placeholder="Seleccionar" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Sin proveedor</SelectItem>
+                        <SelectItem value="none">Sin proveedor</SelectItem>
                         {proveedores.map((proveedor) => (
                           <SelectItem key={proveedor.id} value={proveedor.id}>
                             {proveedor.razon_social}
