@@ -24,8 +24,8 @@ export default function Login({ onLogin }: LoginProps) {
 
     try {
       await onLogin(username, password);
-    } catch (error: any) {
-      setError(error.message || 'Error al iniciar sesión');
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'Error al iniciar sesión');
     } finally {
       setLoading(false);
     }

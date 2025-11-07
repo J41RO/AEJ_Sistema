@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
 // API Configuration - Use environment variable or fallback
 const getApiBaseUrl = (): string => {
@@ -87,6 +87,8 @@ export interface User {
   rol: 'SUPERUSUARIO' | 'ADMIN' | 'VENDEDOR' | 'ALMACEN' | 'CONTADOR';
   ubicacion: 'EEUU' | 'COLOMBIA';
   is_active: boolean;
+  activo?: boolean; // Alias for is_active for frontend compatibility
+  permissions?: string[]; // Added for permission system
   created_at: string;
 }
 
@@ -151,19 +153,21 @@ export interface SaleItem {
   product: Product;
 }
 
+export interface DashboardAlert {
+  tipo: string;
+  mensaje: string;
+  producto?: string;
+  stock?: number;
+}
+
 export interface DashboardMetrics {
   total_ventas_hoy: number;
   total_productos: number;
   total_clientes: number;
   stock_bajo: number;
   ventas_mes: number;
-  productos_mas_vendidos: any[];
-  alertas: Array<{
-    tipo: string;
-    mensaje: string;
-    producto?: string;
-    stock?: number;
-  }>;
+  productos_mas_vendidos: Product[];
+  alertas: DashboardAlert[];
 }
 
 // API Methods
@@ -175,7 +179,10 @@ export const authAPI = {
 
   getCurrentUser: async (): Promise<User> => {
     const response = await api.get('/auth/me');
-    return response.data;
+    const user = response.data;
+    // Map is_active to activo for frontend compatibility
+    user.activo = user.is_active;
+    return user;
   },
 
   logout: (): void => {

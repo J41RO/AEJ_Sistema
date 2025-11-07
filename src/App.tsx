@@ -74,9 +74,11 @@ const App = () => {
       setUser(userData);
 
       toast.success(`¡Bienvenido ${userData.nombre_completo}!`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
-      const errorMessage = error.response?.data?.detail || 'Error al iniciar sesión';
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { detail?: string } } }).response?.data?.detail || 'Error al iniciar sesión'
+        : 'Error al iniciar sesión';
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }

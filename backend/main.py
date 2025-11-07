@@ -14,8 +14,15 @@ load_dotenv()
 # Import local modules
 from database import get_db, create_tables
 from models import (
-    User as UserModel, Product as ProductModel, Client as ClientModel,
-    Sale as SaleModel, SaleItem as SaleItemModel
+    User as UserModel, 
+    Product as ProductModel, 
+    Client as ClientModel,
+    Sale as SaleModel, 
+    SaleItem as SaleItemModel,
+    InventoryMovement as InventoryMovementModel,
+    Supplier as SupplierModel,
+    SaleStatus,
+    MovementType
 )
 from schemas import (
     User as UserSchema, UserCreate, UserUpdate,
@@ -70,7 +77,6 @@ def startup_event():
     db = SessionLocal()
     try:
         # Check if users exist
-        from models import User as UserModel
         user_count = db.query(UserModel).count()
 
         if user_count == 0:
@@ -200,7 +206,7 @@ async def get_products(
     current_user: UserModel = Depends(get_current_active_user)
 ):
     """Get all products"""
-    products = db.query(ProductModel).filter(Product.is_active == True).offset(skip).limit(limit).all()
+    products = db.query(ProductModel).filter(ProductModel.is_active == True).offset(skip).limit(limit).all()
     return products
 
 @app.post("/products", response_model=ProductSchema)
@@ -211,11 +217,11 @@ async def create_product(
 ):
     """Create new product"""
     # Check if code already exists
-    db_product = db.query(ProductModel).filter(Product.codigo == product.codigo).first()
+    db_product = db.query(ProductModel).filter(ProductModel.codigo == product.codigo).first()
     if db_product:
         raise HTTPException(status_code=400, detail="Product code already exists")
     
-    db_product = Product(**product.dict())
+    db_product = ProductModel(**product.dict())
     db.add(db_product)
     db.commit()
     db.refresh(db_product)
@@ -228,7 +234,7 @@ async def get_product(
     current_user: UserModel = Depends(get_current_active_user)
 ):
     """Get product by ID"""
-    product = db.query(ProductModel).filter(Product.id == product_id).first()
+    product = db.query(ProductModel).filter(ProductModel.id == product_id).first()
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
@@ -241,7 +247,7 @@ async def update_product(
     current_user: UserModel = Depends(require_admin_or_super)
 ):
     """Update product"""
-    db_product = db.query(ProductModel).filter(Product.id == product_id).first()
+    db_product = db.query(ProductModel).filter(ProductModel.id == product_id).first()
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
     
@@ -262,7 +268,7 @@ async def get_clients(
     current_user: UserModel = Depends(get_current_active_user)
 ):
     """Get all clients"""
-    clients = db.query(ClientModel).filter(Client.is_active == True).offset(skip).limit(limit).all()
+    clients = db.query(ClientModel).filter(ClientModel.is_active == True).offset(skip).limit(limit).all()
     return clients
 
 @app.post("/clients", response_model=ClientSchema)
@@ -273,11 +279,11 @@ async def create_client(
 ):
     """Create new client"""
     # Check if document already exists
-    db_client = db.query(ClientModel).filter(Client.documento == client.documento).first()
+    db_client = db.query(ClientModel).filter(ClientModel.documento == client.documento).first()
     if db_client:
         raise HTTPException(status_code=400, detail="Document already exists")
     
-    db_client = Client(**client.dict())
+    db_client = ClientModel(**client.dict())
     db.add(db_client)
     db.commit()
     db.refresh(db_client)
@@ -303,11 +309,11 @@ async def create_sale(
 ):
     """Create new sale"""
     # Generate sale number
-    last_sale = db.query(SaleModel).order_by(Sale.id.desc()).first()
+    last_sale = db.query(SaleModel).order_by(SaleModel.id.desc()).first()
     sale_number = f"VTA-{(last_sale.id + 1 if last_sale else 1):06d}"
     
     # Create sale
-    db_sale = Sale(
+    db_sale = SaleModel(
         numero_venta=sale_number,
         client_id=sale.client_id,
         user_id=current_user.id,
@@ -325,7 +331,7 @@ async def create_sale(
     # Create sale items and update stock
     for item in sale.items:
         # Check product exists and has enough stock
-        product = db.query(ProductModel).filter(Product.id == item.product_id).first()
+        product = db.query(ProductModel).filter(ProductModel.id == item.product_id).first()
         if not product:
             raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
         
@@ -334,7 +340,7 @@ async def create_sale(
         
         # Create sale item
         subtotal = item.cantidad * item.precio_unitario - item.descuento
-        db_item = SaleItem(
+        db_item = SaleItemModel(
             sale_id=db_sale.id,
             product_id=item.product_id,
             cantidad=item.cantidad,
@@ -349,7 +355,7 @@ async def create_sale(
         product.stock_actual -= item.cantidad
         
         # Create inventory movement
-        movement = InventoryMovement(
+        movement = InventoryMovementModel(
             product_id=product.id,
             user_id=current_user.id,
             tipo=MovementType.SALIDA,
@@ -376,27 +382,27 @@ async def get_dashboard_metrics(
     month_start = today.replace(day=1)
     
     # Total sales today
-    total_ventas_hoy = db.query(func.sum(Sale.total)).filter(
-        func.date(Sale.created_at) == today,
-        Sale.status == SaleStatus.COMPLETADA
+    total_ventas_hoy = db.query(func.sum(SaleModel.total)).filter(
+        func.date(SaleModel.created_at) == today,
+        SaleModel.status == SaleStatus.COMPLETADA
     ).scalar() or 0
     
     # Total products
-    total_productos = db.query(ProductModel).filter(Product.is_active == True).count()
+    total_productos = db.query(ProductModel).filter(ProductModel.is_active == True).count()
     
     # Total clients
-    total_clientes = db.query(ClientModel).filter(Client.is_active == True).count()
+    total_clientes = db.query(ClientModel).filter(ClientModel.is_active == True).count()
     
     # Low stock products
     stock_bajo = db.query(ProductModel).filter(
-        Product.stock_actual <= Product.stock_minimo,
-        Product.is_active == True
+        ProductModel.stock_actual <= ProductModel.stock_minimo,
+        ProductModel.is_active == True
     ).count()
     
     # Sales this month
-    ventas_mes = db.query(func.sum(Sale.total)).filter(
-        Sale.created_at >= month_start,
-        Sale.status == SaleStatus.COMPLETADA
+    ventas_mes = db.query(func.sum(SaleModel.total)).filter(
+        SaleModel.created_at >= month_start,
+        SaleModel.status == SaleStatus.COMPLETADA
     ).scalar() or 0
     
     # Most sold products (placeholder)
@@ -405,8 +411,8 @@ async def get_dashboard_metrics(
     # Alerts (low stock)
     alertas = []
     low_stock_products = db.query(ProductModel).filter(
-        Product.stock_actual <= Product.stock_minimo,
-        Product.is_active == True
+        ProductModel.stock_actual <= ProductModel.stock_minimo,
+        ProductModel.is_active == True
     ).limit(5).all()
     
     for product in low_stock_products:
