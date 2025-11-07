@@ -76,13 +76,13 @@ def startup_event():
         if user_count == 0:
             print("📊 Database is empty, running seed...")
             # Import and run seed functions
-            from seed import create_initial_users, create_initial_products, create_initial_clients, create_initial_suppliers, create_initial_configuration
+            from seed import create_initial_users, create_initial_products, create_initial_clients, create_initial_suppliers, create_initial_configurations
 
             create_initial_users(db)
             create_initial_products(db)
             create_initial_clients(db)
             create_initial_suppliers(db)
-            create_initial_configuration(db)
+            create_initial_configurations(db)
 
             print("✅ Database seeded successfully!")
         else:
