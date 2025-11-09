@@ -234,6 +234,16 @@ export default function Layout({ children, user, onLogout, currentPage, onNaviga
             <LogOut className="w-5 h-5 mr-3" />
             Cerrar Sesión
           </Button>
+
+          {/* Version */}
+          <div className="mt-3 px-3 py-2 bg-gray-50 rounded-lg">
+            <p className="text-xs text-gray-500 text-center">
+              Versión 2.0.0 - Integración de Facturas
+            </p>
+            <p className="text-xs text-gray-400 text-center mt-1">
+              {new Date().toLocaleDateString('es-CO')}
+            </p>
+          </div>
         </div>
       </div>
 
