@@ -1,0 +1,45 @@
+{
+  "proveedor": {
+    "nit": "900479120-7",
+    "razon_social": "DISTRIBUIDORA EL HUECO S.A.S",
+    "email": "ventas@elhueco.com",
+    "telefono": "3154795581",
+    "direccion": "Calle 123 #45-67",
+    "ciudad": "BUCARAMANGA"
+  },
+  "factura": {
+    "numero": "F5C612276",
+    "fecha": "2025-01-15",
+    "cufe": "b58736aef9ead8b517c5d606936b38e6d0e8b9c5b58736aef9ead8b517c5d606",
+    "fecha_aceptacion": "2025-01-15T14:30:00",
+    "firma_digital": "fVXmF0gRFxTfqCl789tPwYjJ0GxM0CeV..."
+  },
+  "productos": [
+    {
+      "referencia": "30K-PCR",
+      "nombre": "BOLSA DE EMPAQUE 30K PCR",
+      "cantidad": 100,
+      "precio_unitario": 1500.00,
+      "total": 150000.00
+    },
+    {
+      "referencia": "CINTA-EMB",
+      "nombre": "CINTA DE EMBALAJE TRANSPARENTE 48MM",
+      "cantidad": 50,
+      "precio_unitario": 3200.00,
+      "total": 160000.00
+    },
+    {
+      "referencia": "MARCADOR-P",
+      "nombre": "MARCADOR PERMANENTE NEGRO",
+      "cantidad": 25,
+      "precio_unitario": 2800.00,
+      "total": 70000.00
+    }
+  ],
+  "totales": {
+    "subtotal": 380000.00,
+    "iva": 72200.00,
+    "total": 452200.00
+  }
+}
