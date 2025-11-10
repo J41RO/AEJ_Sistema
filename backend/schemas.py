@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import datetime
 from models import UserRole, UserLocation, ProductCategory, SaleStatus, PurchaseInvoiceStatus
@@ -135,7 +135,7 @@ class Supplier(SupplierBase):
 # Sale schemas
 class SaleItemBase(BaseModel):
     product_id: int
-    cantidad: int
+    cantidad: int = Field(..., gt=0, description="Cantidad debe ser mayor a 0")
     precio_unitario: float
     descuento: float = 0.0
 
