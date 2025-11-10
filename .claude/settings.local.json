@@ -7,7 +7,8 @@
       "Bash(pip install:*)",
       "Bash(git add:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\nSesión 2: Tests críticos de backend - Sales Endpoints + Models\n\n**Tests de Sales Endpoints (12 tests):**\n- GET /sales con autenticación y paginación (3 tests)\n- POST /sales - Creación exitosa de ventas (1 test)\n- Validación de stock y decrementos automáticos (2 tests)\n- Creación de movimientos de inventario (1 test)\n- Validaciones: stock insuficiente, producto inválido (2 tests)\n- Cálculo correcto de totales (1 test)\n- Generación secuencial de números de venta (1 test)\n- Ventas con múltiples productos (1 test)\n- Cobertura: ~95% de endpoints de ventas\n\n**Tests de Models (19 tests):**\n- User model: creación, relationships, roles (3 tests)\n- Product model: creación, stock, relationships (3 tests)\n- Supplier model: creación, relationships (2 tests)\n- Client model: creación, relationships (2 tests)\n- PurchaseInvoice model: creación, items relationship (2 tests)\n- Sale model: creación, items relationship (2 tests)\n- InventoryMovement model: creación, tipos (ENTRADA/SALIDA/AJUSTE) (2 tests)\n- Timestamps: created_at, updated_at (3 tests)\n- Cobertura: ~90% de modelos principales\n\n**Correcciones:**\n- Actualizado pytest.ini para remover opciones de coverage no instaladas\n\n**Total Sesión 2: 31 tests nuevos**\n**Total acumulado: 83 tests pasando exitosamente**\n\nTiempo de ejecución: 24.41s\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
