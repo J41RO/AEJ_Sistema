@@ -1,20 +1,20 @@
 /**
  * Integration tests for Authentication API
  * These tests make REAL calls to the backend server
- * Requires backend running on http://localhost:8000
+ * Requires backend running on http://192.168.1.137:8000
  */
 import { describe, it, expect, beforeAll } from 'vitest';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://192.168.1.137:8000';
 
 describe('Auth API Integration', () => {
   let authToken: string;
 
   it('should successfully login with valid credentials', async () => {
     const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-      username: 'testuser',
-      password: 'testpassword123'
+      username: 'vendedor1',
+      password: 'vendedor123'
     });
 
     expect(response.status).toBe(200);
@@ -41,8 +41,8 @@ describe('Auth API Integration', () => {
   it('should get current user info with valid token', async () => {
     // First login
     const loginResponse = await axios.post(`${API_BASE_URL}/auth/login`, {
-      username: 'testuser',
-      password: 'testpassword123'
+      username: 'vendedor1',
+      password: 'vendedor123'
     });
 
     const token = loginResponse.data.access_token;
@@ -57,7 +57,7 @@ describe('Auth API Integration', () => {
     expect(response.status).toBe(200);
     expect(response.data).toHaveProperty('username');
     expect(response.data).toHaveProperty('email');
-    expect(response.data.username).toBe('testuser');
+    expect(response.data.username).toBe('vendedor1');
   });
 
   it('should reject /auth/me without token', async () => {

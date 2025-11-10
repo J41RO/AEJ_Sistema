@@ -15,13 +15,15 @@ src/test/
 ## Running Tests
 
 ### Prerequisites
-**IMPORTANT**: Integration tests require the backend server running on `http://localhost:8000`
+**IMPORTANT**: Integration tests require the backend server running on the IP configured in `.env`
 
 Start the backend first:
 ```bash
 cd backend
 python main.py
 ```
+
+Tests will use `VITE_API_URL` from `.env` (default: `http://192.168.1.137:8000`)
 
 ### Run all tests
 ```bash

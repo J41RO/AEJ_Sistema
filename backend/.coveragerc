@@ -1,0 +1,49 @@
+[run]
+# Archivos a incluir en coverage
+source = .
+omit =
+    */tests/*
+    */test_*
+    */__pycache__/*
+    */venv/*
+    */env/*
+    */.venv/*
+    */site-packages/*
+    conftest.py
+    setup.py
+
+[report]
+# Configuración del reporte
+precision = 2
+show_missing = True
+skip_covered = False
+
+# Umbrales de cobertura
+fail_under = 70
+
+# Excluir líneas del coverage
+exclude_lines =
+    # Excluir líneas de debug
+    pragma: no cover
+    def __repr__
+    def __str__
+
+    # Excluir bloques if __name__ == "__main__"
+    if __name__ == .__main__.:
+
+    # Excluir excepciones no implementadas
+    raise NotImplementedError
+    raise AssertionError
+
+    # Excluir pass statements
+    pass
+
+    # Excluir código abstracto
+    @abstract
+
+[html]
+directory = htmlcov
+title = AEJ Sistema Backend - Coverage Report
+
+[xml]
+output = coverage.xml

@@ -12,15 +12,28 @@ export default defineConfig({
     css: true,
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcov', 'text-summary'],
+      reportsDirectory: './coverage',
       exclude: [
         'node_modules/',
         'src/test/',
         '**/*.d.ts',
         '**/*.config.*',
         '**/mockData',
-        'dist/'
-      ]
+        'dist/',
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/setup.ts'
+      ],
+      include: [
+        'src/**/*.ts',
+        'src/**/*.tsx'
+      ],
+      all: true,
+      lines: 70,
+      functions: 70,
+      branches: 70,
+      statements: 70
     }
   },
   resolve: {

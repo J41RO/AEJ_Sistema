@@ -297,3 +297,102 @@ class TestTokenDataExtraction:
         # Should still work and extract username
         token_data = verify_token(token)
         assert token_data.username == username
+
+
+@pytest.mark.unit
+@pytest.mark.auth
+class TestCurrentUserEndpoints:
+    """Test get_current_user and get_current_active_user functions"""
+
+    def test_get_current_user_with_valid_token_and_existing_user(self, client, test_user):
+        """Test get_current_user returns user when token is valid and user exists"""
+        from auth import create_access_token, get_current_user
+        from database import SessionLocal
+
+        token = create_access_token(data={"sub": test_user.username})
+        db = SessionLocal()
+
+        try:
+            # Simulate the dependency injection
+            user = get_current_user(token=token, db=db)
+
+            assert user is not None
+            assert user.username == test_user.username
+            assert user.id == test_user.id
+        finally:
+            db.close()
+
+    def test_get_current_user_with_valid_token_but_deleted_user(self, client, db_session):
+        """Test get_current_user raises 401 when user is deleted after token was issued"""
+        from auth import create_access_token, get_current_user
+        from models import User, UserRole, UserLocation
+
+        # Create a user
+        temp_user = User(
+            username="temp_deleted_user",
+            email="temp@test.com",
+            nombre_completo="Temp User",
+            password_hash=get_password_hash("password123"),
+            rol=UserRole.VENDEDOR,
+            ubicacion=UserLocation.COLOMBIA,
+            is_active=True
+        )
+        db_session.add(temp_user)
+        db_session.commit()
+
+        # Create token for this user
+        token = create_access_token(data={"sub": temp_user.username})
+
+        # Delete the user
+        db_session.delete(temp_user)
+        db_session.commit()
+
+        # Try to get current user with the token
+        with pytest.raises(HTTPException) as exc_info:
+            get_current_user(token=token, db=db_session)
+
+        assert exc_info.value.status_code == 401
+        assert "Could not validate credentials" in str(exc_info.value.detail)
+
+    def test_get_current_active_user_with_active_user(self, client, test_user):
+        """Test get_current_active_user returns user when user is active"""
+        from auth import get_current_active_user
+
+        # test_user is active by default
+        assert test_user.is_active is True
+
+        # Should return the user
+        result = get_current_active_user(current_user=test_user)
+
+        assert result is not None
+        assert result.id == test_user.id
+        assert result.username == test_user.username
+
+    def test_get_current_active_user_with_inactive_user(self, client, db_session):
+        """Test get_current_active_user raises 400 when user is inactive"""
+        from auth import get_current_active_user
+        from models import User, UserRole, UserLocation
+
+        # Create an inactive user
+        inactive_user = User(
+            username="inactive_user_test",
+            email="inactive@test.com",
+            nombre_completo="Inactive User",
+            password_hash=get_password_hash("password123"),
+            rol=UserRole.VENDEDOR,
+            ubicacion=UserLocation.COLOMBIA,
+            is_active=False
+        )
+        db_session.add(inactive_user)
+        db_session.commit()
+
+        # Try to use get_current_active_user with inactive user
+        with pytest.raises(HTTPException) as exc_info:
+            get_current_active_user(current_user=inactive_user)
+
+        assert exc_info.value.status_code == 400
+        assert "Inactive user" in str(exc_info.value.detail)
+
+        # Clean up
+        db_session.delete(inactive_user)
+        db_session.commit()

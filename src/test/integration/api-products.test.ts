@@ -1,12 +1,12 @@
 /**
  * Integration tests for Products API
  * These tests make REAL calls to the backend server
- * Requires backend running on http://localhost:8000
+ * Requires backend running on http://192.168.1.137:8000
  */
 import { describe, it, expect, beforeAll } from 'vitest';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://192.168.1.137:8000';
 
 describe('Products API Integration', () => {
   let adminToken: string;

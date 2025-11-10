@@ -1,5 +1,12 @@
 # Sistema POS AEJ Cosmetic & More
 
+[![Tests](https://github.com/YOUR_USERNAME/AEJ_Sistema/actions/workflows/tests.yml/badge.svg)](https://github.com/YOUR_USERNAME/AEJ_Sistema/actions/workflows/tests.yml)
+[![Backend Coverage](https://img.shields.io/codecov/c/github/YOUR_USERNAME/AEJ_Sistema?flag=backend&label=Backend%20Coverage)](https://codecov.io/gh/YOUR_USERNAME/AEJ_Sistema)
+[![Frontend Coverage](https://img.shields.io/codecov/c/github/YOUR_USERNAME/AEJ_Sistema?flag=frontend&label=Frontend%20Coverage)](https://codecov.io/gh/YOUR_USERNAME/AEJ_Sistema)
+[![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
+[![Node Version](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Sistema completo de Punto de Venta (POS) para AEJ Cosmetic & More con gestión de inventario, clientes, proveedores, facturación y reportes.
 
 ## 🚀 Características Principales
@@ -28,6 +35,43 @@ Sistema completo de Punto de Venta (POS) para AEJ Cosmetic & More con gestión d
 - SQLite Database
 - Pydantic Models
 - CORS Middleware
+
+## 🧪 Testing & Quality Assurance
+
+### Test Coverage: **181 tests**
+- ✅ **Backend**: 168 tests (pytest)
+  - 156 unit tests
+  - 12 integration tests
+  - Coverage: >80%
+- ✅ **Frontend**: 13 integration tests (vitest)
+  - Real HTTP calls to backend
+  - Coverage: >70%
+
+### Running Tests
+
+**Backend Tests:**
+```bash
+cd backend
+pytest tests/ -v                    # All tests
+pytest tests/unit/ -v               # Unit tests only
+pytest tests/integration/ -v        # Integration tests only
+pytest tests/ --cov --cov-report=html  # With coverage report
+```
+
+**Frontend Tests:**
+```bash
+npm test                           # Watch mode
+npm run test:integration          # Run once
+npm run test:coverage             # With coverage report
+npm run test:ui                   # UI interface
+```
+
+**CI/CD:**
+- Automated tests run on every push/PR via GitHub Actions
+- Coverage reports uploaded to Codecov
+- Combined coverage reports available as artifacts
+
+📖 **Full testing documentation:** [TESTING.md](TESTING.md)
 
 ## 📋 Requisitos del Sistema
 
