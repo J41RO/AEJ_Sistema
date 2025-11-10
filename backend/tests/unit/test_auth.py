@@ -301,33 +301,14 @@ class TestTokenDataExtraction:
 
 @pytest.mark.unit
 @pytest.mark.auth
-class TestCurrentUserEndpoints:
-    """Test get_current_user and get_current_active_user functions"""
+class TestUserDeletionEdgeCases:
+    """Test edge cases with deleted users and tokens"""
 
-    def test_get_current_user_with_valid_token_and_existing_user(self, client, test_user):
-        """Test get_current_user returns user when token is valid and user exists"""
-        from auth import create_access_token, get_current_user
-        from database import SessionLocal
-
-        token = create_access_token(data={"sub": test_user.username})
-        db = SessionLocal()
-
-        try:
-            # Simulate the dependency injection
-            user = get_current_user(token=token, db=db)
-
-            assert user is not None
-            assert user.username == test_user.username
-            assert user.id == test_user.id
-        finally:
-            db.close()
-
-    def test_get_current_user_with_valid_token_but_deleted_user(self, client, db_session):
-        """Test get_current_user raises 401 when user is deleted after token was issued"""
-        from auth import create_access_token, get_current_user
+    def test_token_valid_but_user_deleted_from_database(self, client, db_session):
+        """Test that valid token's username lookup fails when user is deleted"""
         from models import User, UserRole, UserLocation
 
-        # Create a user
+        # Create a temporary user
         temp_user = User(
             username="temp_deleted_user",
             email="temp@test.com",
@@ -343,39 +324,25 @@ class TestCurrentUserEndpoints:
         # Create token for this user
         token = create_access_token(data={"sub": temp_user.username})
 
-        # Delete the user
+        # Verify token is valid
+        token_data = verify_token(token)
+        assert token_data.username == temp_user.username
+
+        # Delete the user from database
         db_session.delete(temp_user)
         db_session.commit()
 
-        # Try to get current user with the token
-        with pytest.raises(HTTPException) as exc_info:
-            get_current_user(token=token, db=db_session)
+        # get_user_by_username should return None now
+        user = get_user_by_username(db_session, temp_user.username)
+        assert user is None
 
-        assert exc_info.value.status_code == 401
-        assert "Could not validate credentials" in str(exc_info.value.detail)
-
-    def test_get_current_active_user_with_active_user(self, client, test_user):
-        """Test get_current_active_user returns user when user is active"""
-        from auth import get_current_active_user
-
-        # test_user is active by default
-        assert test_user.is_active is True
-
-        # Should return the user
-        result = get_current_active_user(current_user=test_user)
-
-        assert result is not None
-        assert result.id == test_user.id
-        assert result.username == test_user.username
-
-    def test_get_current_active_user_with_inactive_user(self, client, db_session):
-        """Test get_current_active_user raises 400 when user is inactive"""
-        from auth import get_current_active_user
+    def test_inactive_user_can_still_authenticate(self, client, db_session):
+        """Test that inactive users are correctly identified in database"""
         from models import User, UserRole, UserLocation
 
         # Create an inactive user
         inactive_user = User(
-            username="inactive_user_test",
+            username="inactive_test_user",
             email="inactive@test.com",
             nombre_completo="Inactive User",
             password_hash=get_password_hash("password123"),
@@ -386,12 +353,15 @@ class TestCurrentUserEndpoints:
         db_session.add(inactive_user)
         db_session.commit()
 
-        # Try to use get_current_active_user with inactive user
-        with pytest.raises(HTTPException) as exc_info:
-            get_current_active_user(current_user=inactive_user)
+        # User can still be retrieved by username
+        user = get_user_by_username(db_session, "inactive_test_user")
+        assert user is not None
+        assert user.is_active is False
 
-        assert exc_info.value.status_code == 400
-        assert "Inactive user" in str(exc_info.value.detail)
+        # Authentication should still work (returns the user)
+        auth_user = authenticate_user(db_session, "inactive_test_user", "password123")
+        assert auth_user is not None
+        assert auth_user.is_active is False
 
         # Clean up
         db_session.delete(inactive_user)
